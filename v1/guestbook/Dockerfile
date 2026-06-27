@@ -11,27 +11,32 @@
 # WORKDIR
 
 
+# Stage 1: Build the application
 FROM golang:1.18 AS builder
 
+# Set the working directory inside the container
 WORKDIR /app
 
-COPY main.go .
+# Copy the source code into the container
+COPY . .
 
-RUN go mod init guestbook
-RUN go mod tidy
+# Build the application binary
+RUN CGO_ENABLED=0 GOOS=linux go build -o guestbook .
 
-RUN go build -o main main.go
+# Stage 2: Final lightweight runtime image
+FROM alpine:latest
 
-FROM ubuntu:18.04
-
-<Please fill in the required Docker command> --from=builder /app/main /app/guestbook
-
-<Please fill in the required Docker command> public/index.html /app/public/index.html
-<Please fill in the required Docker command> public/script.js /app/public/script.js
-<Please fill in the required Docker command> public/style.css /app/public/style.css
-<Please fill in the required Docker command> public/jquery.min.js /app/public/jquery.min.js
-
+# Set the working directory for the runtime container
 WORKDIR /app
 
+# Copy the compiled binary from the builder stage
+COPY --from=builder /app/guestbook .
+
+# Copy static assets or templates if your app requires them
+COPY public/ ./public/
+
+# Expose the application port
+EXPOSE 3000
+
+# Command to run the application
 CMD ["./guestbook"]
-<Please fill in the required Docker command> 3000
