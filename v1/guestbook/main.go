@@ -27,6 +27,7 @@ import (
 	"github.com/xyproto/simpleredis/v2"
 )
 
+
 var (
 	// For when Redis is used
 	masterPool *simpleredis.ConnectionPool
@@ -187,6 +188,9 @@ func main() {
 	r.Path("/info").Methods("GET").HandlerFunc(InfoHandler)
 	r.Path("/env").Methods("GET").HandlerFunc(EnvHandler)
 	r.Path("/hello").Methods("GET").HandlerFunc(HelloHandler)
+
+	// Serve static files from the public/ directory
+	r.PathPrefix("/").Handler(http.FileServer(http.Dir("public")))
 
 	n := negroni.Classic()
 	n.UseHandler(r)

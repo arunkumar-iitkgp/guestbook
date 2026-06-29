@@ -20,7 +20,7 @@ spec:
         app: guestbook
     spec:
       containers:
-      - image: arunkumariitkgp/guestbook:v1
+      - image: arunkumariitkgp/guestbook:v2
         imagePullPolicy: Always
         name: guestbook
         ports:
